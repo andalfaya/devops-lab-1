@@ -7,19 +7,18 @@ from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
-# Global variable (pylint will flag this)
-counter = 0
+# Usar configuración de la app en lugar de variable global
+app.config['COUNTER'] = 0
 
 @app.route('/')
 def hello_world():
     """Main endpoint that returns a greeting"""
-    global counter
-    counter += 1
+    app.config['COUNTER'] += 1
     return jsonify({
         'message': 'Hello from DevOps Lab!',
         'version': '1.0.0',
         'environment': os.environ.get('ENVIRONMENT', 'development'),
-        'visits': counter
+        'visits': app.config['COUNTER']
     })
 
 @app.route('/health')
@@ -36,12 +35,11 @@ def get_info():
         'framework': 'Flask'
     })
 
-# Bad function (has code quality issues for demonstration)
-def badFunction(x, y):  # pylint will flag: function name should be snake_case
+# Función corregida con nombre en snake_case y sin variable sin usar
+def bad_function(x, y):
     """This function has intentional quality issues"""
-    z = x + y  # unused variable warning
     if x > 10:
-        if y > 10:  # nested if (complexity issue)
+        if y > 10:
             result = x * y
         else:
             result = x + y
@@ -54,7 +52,7 @@ def calculate():
     """Endpoint that uses the bad function"""
     x = int(request.args.get('x', 5))
     y = int(request.args.get('y', 3))
-    result = badFunction(x, y)
+    result = bad_function(x, y)
     return jsonify({'result': result})
 
 if __name__ == '__main__':
